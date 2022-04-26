@@ -7,6 +7,7 @@ This repo contains all the codes used to operate our 6 DOF Hydraulic Driving Sim
 The socket programming portion of the project is split into two parts:
 
 1- The Server Code *PC*
+
 The server code contains two functions:
 
 ````
