@@ -90,7 +90,7 @@ def calculatePistonLength(readings):
         if readings is not None:
             roll,pitch,yaw = readings
             trans = np.transpose(np.array([0,0,0])) # X, Y, Z
-            rotation = np.transpose(np.array([roll,pitch,yaw])) # roll,pitch,yaw
+            rotation = np.transpose(np.array([pitch,yaw,roll])) # pitch,yaw,roll
             # # # Definition of the platform home position.
             home_pos= np.array([0, 0, 997])
             
