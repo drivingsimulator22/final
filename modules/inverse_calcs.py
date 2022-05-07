@@ -44,6 +44,15 @@ Platform = np.array([
     [-376.4888746,168.479082, 0],
     [-333.9848185, 242.098462, 0] ])
 Platform = np.transpose(Platform)
+## MOAAZ
+# Platform = np.array([ 
+#     [295,219,0],
+#     [337,146, 0],
+#     [42,-365,0],
+#     [-42,-365,0],
+#     [-337,146, 0],
+#     [-295,219, 0] ])
+# Platform = np.transpose(Platform)
 
 # print('Leg lengths to command in order to achieve desired position of plate: \n')
 # #########################################################################################
