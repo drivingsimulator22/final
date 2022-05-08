@@ -132,6 +132,8 @@ def calculatePistonLength(readings):
             return pistonlengthlist
 ````
 
+****
+
 ### 3-Sensor Readings:
 In this step, we get the real length of the 6 pistons using 6 linear wire potentiometers. This is done using MCP3008 Analog to Digital converted.
 
@@ -182,6 +184,8 @@ def ADC_MCP3008_Readings():
 
     return Values
 ````
+****
+
 ### 4-PID and PWM:
 In this step, we use the setpoint we got from the calculations in step 2 and compare them to the current sensor readings, then we apply a PID function that sends a PWM that moves the pistons to the desired position, trying to reduce the overshoot and oscillation as much as possible
 
@@ -389,7 +393,7 @@ def update(system, setPoint, measurement):
     return system.outPut
 ````
 
-
+****
 
 
 
