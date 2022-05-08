@@ -45,6 +45,8 @@ then send the Roll,Pitch and Yaw angles as a list of integers to the calculation
 
 ````
 
+****
+
 ### 2-Inverse Kinematics Calculations:
 The inverse kinematics calculations are done inside the calcs module, in the _calculatePistonLength()_ function. 
 
