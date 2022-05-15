@@ -26,6 +26,13 @@ piston_6 = PID.pid(0.01648 ,0.00001 ,0 ,5,0)
 # sensor5total = 0
 # sensor6total = 0
 
+########~~Function Description~~#######
+# Function Name: GPIO_init()
+# Description: This function sets the GPIO pins of the Raspberry Pi, and sets the PWM pins.
+# Input: ---
+# Output: List of PWM variables, that contain the PWM pins of each piston's extraction and retraction pins.
+####################################
+
 def GPIO_init():
     freq = 100
     
@@ -61,6 +68,13 @@ def GPIO_init():
 
     return pwmList
 
+########~~Function Description~~#######
+# Function Name: mapReadings()
+# Description: This function maps the sensors and removes the zero errors.
+# Input: ---
+# Output: List of sensor values.
+####################################
+
 def mapReadings():
     sensor_readings[0] = MAP.MAP(sensor_readings[0], 0,  1023, 0, 505) - sensor_zero_errors[0]
     sensor_readings[1] = MAP.MAP(sensor_readings[1], 62, 1023, 0,  465) - sensor_zero_errors[1]
@@ -72,7 +86,15 @@ def mapReadings():
     Values = [int(sensor_readings) for sensor_readings in sensor_readings]
     return Values
 
-def computePID(sensorValues):
+########~~Function Description~~#######
+# Function Name: computePWM()
+# Description: This function computes the PWM for each piston in the PID class. It takes the current sensor values and computes
+#              the PWM for each piston.
+# Input: Sensor Values (Real piston lengths)
+# Output: List of PWM values for each sensor.
+####################################
+
+def computePWM(sensorValues):
     piston1_pwm = PID.update(piston_1, piston_1.setPoint, Values[0])
     piston2_pwm = PID.update(piston_2, piston_2.setPoint, Values[1])
     piston3_pwm = PID.update(piston_3, piston_3.setPoint, Values[2])
@@ -83,6 +105,14 @@ def computePID(sensorValues):
     pwmList = [piston1_pwm,piston2_pwm,piston3_pwm,piston4_pwm,piston5_pwm,piston6_pwm]
     return pwmList
 
+########~~Function Description~~#######
+# Function Name: mapSetpoints()
+# Description: This function maps the values of the lengths to a minimum and maximum value, to ensure that the platform doesn't break
+#              and pistons don't reach the minimum and maximum points.
+# Input: Desired Length 
+# Output: Desired length of each piston after mapping
+####################################
+
 def mapSetpoints(desiredLength):
     piston_1.setPoint = int(MAP.MAP(desired_Length[2], -58, 320, 70, 320))
     piston_2.setPoint = int(MAP.MAP(desired_Length[3], -58, 320, 70, 320))
@@ -92,6 +122,13 @@ def mapSetpoints(desiredLength):
     piston_6.setPoint = int(MAP.MAP(desired_Length[1], -58, 320, 70, 320))
     setpoints = [piston_1.setPoint,piston_2.setPoint,piston_3.setPoint,piston_4.setPoint,piston_5.setPoint,piston_6.setPoint]
     return setpoints
+
+########~~Function Description~~#######
+# Function Name: piston(One~Six)PWM()
+# Description: These functions control the PWM of each piston and are run in the PID loop.
+# Input: Piston PWM values 
+# Output: PWM to the pistons using PID control.
+####################################
 
 def pistonOnePWM(piston1_pwm,pwm_1,pwm_7):
     if piston1_pwm > 0:           # Perform Extraction if PWM is +ve
@@ -174,7 +211,7 @@ def pistonSixPWM(piston6_pwm,pwm_6,pwm_12):
 
 
 
-pwm_1,pwm_2,pwm_3,pwm_4,pwm_5,pwm_6,pwm_7,pwm_8,pwm_9,pwm_10,pwm_11,pwm_12 = GPIO_init()
+pwm_1,pwm_2,pwm_3,pwm_4,pwm_5,pwm_6,pwm_7,pwm_8,pwm_9,pwm_10,pwm_11,pwm_12 = GPIO_init()  # Initializing our list of PWMs
 
 sensor_zero_errors = [36, 43, 35, 20, 38, 24] # List of zero errors for each sensor
 SPI_PORT = 0
@@ -191,14 +228,14 @@ run=True
 try:
     while(run):
         try:
-            roll_recieved,pitch_recieved,yaw_recieved=client.takeReadings()
-            current_readings_recieved = [roll_recieved,pitch_recieved,yaw_recieved]
-            if previous_reading_recieved!=current_readings_recieved:
+            roll_recieved,pitch_recieved,yaw_recieved=client.takeReadings()             ### Take readings from simtools and put into 3 angles
+            current_readings_recieved = [roll_recieved,pitch_recieved,yaw_recieved]     ### Put the three angles into a list, to calculate lengths.
+            if previous_reading_recieved!=current_readings_recieved:                    ### If the current reading is not the same as the previous reading.
                 real_Length = sensor.ADC_MCP3008_Readings()
-                desired_Length = calcs.calculatePistonLength(current_readings_recieved)
-                previous_reading_recieved=current_readings_recieved
+                desired_Length = calcs.calculatePistonLength(current_readings_recieved)     ## These lines take the sensor values, and desired length from the calculations
+                previous_reading_recieved=current_readings_recieved                         
                 setpoints = mapSetpoints(desired_Length)
-                piston_1.setPoint,piston_2.setPoint,piston_3.setPoint,piston_4.setPoint,piston_5.setPoint,piston_6.setPoint = setpoints
+                piston_1.setPoint,piston_2.setPoint,piston_3.setPoint,piston_4.setPoint,piston_5.setPoint,piston_6.setPoint = setpoints # Put the setpoints into a list
 
                 # piston_1.setPoint = 0
                 # piston_2.setPoint = 0
@@ -221,10 +258,10 @@ try:
                         sensor_readings[i] = mcp.read_adc(i)
                     
 
-                    Values = mapReadings()
+                    Values = mapReadings()  ## Sensor readings
                     
                     # Compute PID parameters
-                    piston1_pwm,piston2_pwm,piston3_pwm,piston4_pwm,piston5_pwm,piston6_pwm = computePID(Values)
+                    piston1_pwm,piston2_pwm,piston3_pwm,piston4_pwm,piston5_pwm,piston6_pwm = computePWM(Values)
 
                     #
                     # PWM Output
@@ -242,6 +279,7 @@ try:
 
                     countPID+=1
                     if countPID == 500:
+                        ### These lines stop the PWM signal on the pistons when the PID control is over. To ensure the pistons stay in place after finishing.
                         pwm_1.start(0)
                         pwm_2.start(0)
                         pwm_3.start(0)
@@ -255,7 +293,7 @@ try:
                         pwm_11.start(0)
                         pwm_12.start(0)
 
-                        runPID=False
+                        runPID=False      ### Exits the PID loop after 500 iterations. This ensures that the system is stable, and pauses PID when readings reoccur.
                         print("Done PID")
 
 
@@ -264,6 +302,8 @@ try:
             pass
 
 except KeyboardInterrupt:
+
+    # After pressing control+C, we stop all PWM signals on the pistons, and clear the GPIO pins of the raspberry pi.
     pwm_1.start(0)
     pwm_2.start(0)
     pwm_3.start(0)
