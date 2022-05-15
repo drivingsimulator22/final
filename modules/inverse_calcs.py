@@ -20,12 +20,14 @@ def MAP(value, inMin, inMax, outMin, outMax):
     return outMin + (((value - inMin) / (inMax - inMin)) * (outMax - outMin))
 
 Base = np.array( [ 
+    [-739.1012846,-377.6628879,0],
+    [ -42.48607053,828.9118768,0],
     [ 42.53585743,828.8790286,0],
     [ 739.1023057,-377.6610181,0],
     [696.6661185,-451.2819517,0],
-    [-696.618678,-451.1913206,0],
-    [-739.1012846,-377.6628879,0],
-    [ -42.48607053,828.9118768,0] ])
+     [-696.618678,-451.1913206,0],
+
+    ])
 Base = np.transpose(Base)
     
 # Coordinates of the points where the rods 
@@ -51,12 +53,13 @@ Base = np.transpose(Base)
 
 # ## MOAAZ
 Platform = np.array([ 
+    [-337,146,0],
+    [-295,219,0],
     [295,219,0],
     [337,146, 0],
     [42,-365,0],
     [-42,-365,0],
-    [-337,146, 0],
-    [-295,219, 0] ])
+   ])
 Platform = np.transpose(Platform)
 
 # print('Leg lengths to command in order to achieve desired position of plate: \n')
@@ -103,9 +106,10 @@ def calculatePistonLength(readings):
         # Given input trans, rotation
         try:
             roll,pitch,yaw = readings
-            pitch = MAP(pitch, 475.5, 546.5, -0.2199115, 0.2199115)
-            yaw = MAP(yaw, 475.5, 546.5, -0.2199115, 0.2199115)
-            roll = MAP(roll, 475.5, 546.5, -0.2199115, 0.2199115)
+            pitch = MAP(pitch, 454.75, 567.265, 0.3455751919, -0.3455751919)
+            # pitch = MAP(pitch, 475.5, 546.5, -0.2199115, 0.2199115)
+            yaw = MAP(yaw, 454.75, 567.265, -0.3455751919, 0.3455751919)
+            roll = MAP(roll, 454.75,  567.265, 0.3455751919, -0.3455751919)
             trans = np.transpose(np.array([0,0,0])) # X, Y, Z
             rotation = np.transpose(np.array([pitch,yaw,roll])) # pitch,yaw,roll (radian)
             # # # Definition of the platform home position.
